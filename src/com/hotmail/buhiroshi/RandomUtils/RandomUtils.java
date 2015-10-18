@@ -19,8 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class RandomUtils extends JavaPlugin implements Listener{
-
-    Methods methods = new Methods();
     Map<String, Map<String, Location>> locations = new HashMap<String, Map<String, Location>>();
     final String SPAWN_WORLD = "spawn";
     String errormessage = "";
@@ -51,7 +49,7 @@ public class RandomUtils extends JavaPlugin implements Listener{
         try{
             getDataFolder().mkdir();
             for (World world : Bukkit.getWorlds()) {
-                locations.put(world.getName(), methods.getLocationData(world.getName()));
+                locations.put(world.getName(), Methods.getLocationData(world.getName()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,7 +63,7 @@ public class RandomUtils extends JavaPlugin implements Listener{
                 locations.get(p.getWorld().getName()).put(p.getName(), p.getLocation());
             }
             for (Map.Entry<String, Map<String, Location>> entry : locations.entrySet()) {
-                methods.saveLocationData(entry.getKey(), entry.getValue());
+                Methods.saveLocationData(entry.getKey(), entry.getValue());
             }
         } catch (Exception e) {
             e.printStackTrace();

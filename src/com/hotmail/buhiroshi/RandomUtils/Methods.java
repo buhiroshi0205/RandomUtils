@@ -13,7 +13,7 @@ import org.bukkit.Location;
 
 public class Methods {
     
-    Map<String, Location> getLocationData(String world) throws Exception{
+    static Map<String, Location> getLocationData(String world) throws Exception{
         Map<String, Location> temp = new HashMap<String, Location>();
         File file = new File("plugins" + File.separator + "RandomUtils" + File.separator + world + ".csv");
         if (file.exists()) {
@@ -34,7 +34,7 @@ public class Methods {
         return temp;
     }
     
-    void saveLocationData(String name, Map<String, Location> map) throws Exception {
+    static void saveLocationData(String name, Map<String, Location> map) throws Exception {
         File file = new File("plugins"+File.separator+"RandomUtils"+File.separator+name+".csv");
         file.createNewFile();
         BufferedWriter output = new BufferedWriter(new FileWriter(file, false));
