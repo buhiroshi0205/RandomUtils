@@ -2,6 +2,7 @@ package com.hotmail.buhiroshi.RandomUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -20,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RandomUtils extends JavaPlugin implements Listener{
 
     Methods methods = new Methods();
-    Map<String, Map<String, Location>> locations = new HashMap();
+    Map<String, Map<String, Location>> locations = new HashMap<String, Map<String, Location>>();
     final String SPAWN_WORLD = "spawn";
     String errormessage = "";
     

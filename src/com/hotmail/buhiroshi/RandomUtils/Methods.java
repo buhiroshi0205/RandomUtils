@@ -7,14 +7,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class Methods {
     
     Map<String, Location> getLocationData(String world) throws Exception{
-        Map<String, Location> temp = new HashMap();
-        File file = new File("plugins"+File.separator+"RandomUtils"+File.separator+world+".csv");
+        Map<String, Location> temp = new HashMap<String, Location>();
+        File file = new File("plugins" + File.separator + "RandomUtils" + File.separator + world + ".csv");
         if (file.exists()) {
             BufferedReader input = new BufferedReader(new FileReader(file));
             input.readLine();
@@ -40,13 +41,13 @@ public class Methods {
         output.write("name,x,y,z,yaw,pitch");
         for (Map.Entry<String, Location> entry : map.entrySet()) {
             output.newLine();
-            output.write(entry.getKey()+",");
+            output.write(entry.getKey() + ",");
             Location loc = entry.getValue();
             output.write(String.valueOf(loc.getX()));
-            output.write(","+String.valueOf(loc.getY()));
-            output.write(","+String.valueOf(loc.getZ()));
-            output.write(","+String.valueOf(loc.getYaw()));
-            output.write(","+String.valueOf(loc.getPitch()));
+            output.write("," + String.valueOf(loc.getY()));
+            output.write("," + String.valueOf(loc.getZ()));
+            output.write("," + String.valueOf(loc.getYaw()));
+            output.write("," + String.valueOf(loc.getPitch()));
         }
         output.close();
     }
