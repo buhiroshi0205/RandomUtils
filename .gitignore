@@ -19,6 +19,7 @@ hs_err_pid*
 cscope.files
 cscope.out
 *.orig
+.pmd
 ## NetBeans
 nbproject*
 project.index
