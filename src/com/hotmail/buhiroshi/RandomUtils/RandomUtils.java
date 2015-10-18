@@ -21,7 +21,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RandomUtils extends JavaPlugin implements Listener{
     Map<String, Map<String, Location>> locations = new HashMap<String, Map<String, Location>>();
     final String SPAWN_WORLD = "spawn";
-    String errormessage = "";
     
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -29,7 +28,7 @@ public class RandomUtils extends JavaPlugin implements Listener{
             if (!(sender instanceof Player)) {
                 sender.sendMessage("Command sender must be a player!");
                 return true;
-            };
+            }
             Player p = (Player) sender;
             if (cmd.getName().equalsIgnoreCase("hub")) {
                 p.teleport(new Location(Bukkit.getWorld(SPAWN_WORLD), 0.5F, 65F, 0.5F, 135F, 7F));
