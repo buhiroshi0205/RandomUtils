@@ -21,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RandomUtils extends JavaPlugin implements Listener{
     Map<String, Map<String, Location>> locations = new HashMap<String, Map<String, Location>>();
     final String SPAWN_WORLD = "spawn";
+    Location GLOBAL_SPAWN;
+    Map<String, Location> spawns = new HashMap<String, Location>();
     
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -32,8 +34,8 @@ public class RandomUtils extends JavaPlugin implements Listener{
             Player p = (Player) sender;
             if (cmd.getName().equalsIgnoreCase("hub")) {
                 p.teleport(new Location(Bukkit.getWorld(SPAWN_WORLD), 0.5F, 65F, 0.5F, 135F, 7F));
-            } else if (cmd.getName().equalsIgnoreCase("test")) {
-                
+            } else if (cmd.getName().equalsIgnoreCase("spawn")) {
+                p.teleport(spawns.get(p.getWorld().getName()));
             }
             return true;
         } catch (Exception ex) {
@@ -50,6 +52,8 @@ public class RandomUtils extends JavaPlugin implements Listener{
             for (World world : Bukkit.getWorlds()) {
                 locations.put(world.getName(), Methods.getLocationData(world.getName()));
             }
+            GLOBAL_SPAWN = new Location(Bukkit.getWorld(SPAWN_WORLD), 0.5, 65, 0.5, 135, 7);
+            spawns.put("survival", new Location(Bukkit.getWorld("survival"),52.5,98.5,19.5,0,0));
         } catch (Exception e) {
             e.printStackTrace();
         }
