@@ -53,7 +53,8 @@ public class RandomUtils extends JavaPlugin implements Listener{
                 locations.put(world.getName(), Methods.getLocationData(world.getName()));
             }
             GLOBAL_SPAWN = new Location(Bukkit.getWorld(SPAWN_WORLD), 0.5, 65, 0.5, 135, 7);
-            spawns.put("staff", new Location(Bukkit.getWorld("survival"),34.5,113,-48.5,0,90));
+            spawns.put(SPAWN_WORLD, GLOBAL_SPAWN);
+            spawns.put("staff", new Location(Bukkit.getWorld("staff"),34.5,113,-48.5,0,90));
             spawns.put("survival", new Location(Bukkit.getWorld("survival"),52.5,99,19.5,0,0));
         } catch (Exception e) {
             e.printStackTrace();
