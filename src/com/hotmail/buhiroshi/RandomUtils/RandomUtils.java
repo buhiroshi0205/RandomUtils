@@ -19,10 +19,9 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-public class RandomUtils extends JavaPlugin implements Listener{
+public class RandomUtils extends JavaPlugin implements Listener {
     Map<String, Map<String, Location>> locations = new HashMap<String, Map<String, Location>>();
-    final String SPAWN_WORLD = "spawn";
-    Location GLOBAL_SPAWN;
+    final String SPAWN = "spawn";
     Map<String, Location> spawns = new HashMap<String, Location>();
     Map<String, Location> shops = new HashMap<String, Location>();
     
@@ -34,17 +33,18 @@ public class RandomUtils extends JavaPlugin implements Listener{
                 return true;
             }
             Player p = (Player) sender;
-            if (cmd.getName().equalsIgnoreCase("hub")) {
-                p.teleport(new Location(Bukkit.getWorld(SPAWN_WORLD), 0.5F, 65F, 0.5F, 135F, 7F));
-            } else if (cmd.getName().equalsIgnoreCase("spawn")) {
-                p.teleport(spawns.get(p.getWorld().getName()));
-            } else if (cmd.getName().equalsIgnoreCase("shop")) {
-                Location temp = shops.get(p.getWorld().getName());
-                if (temp == null) {
-                    p.sendMessage(ChatColor.RED + "You are not in a world with a valid admin shop!");
-                } else {
-                    p.teleport(temp);
-                }
+            switch (cmd.getName().toLowerCase()) {
+                case "hub":
+                    p.teleport(spawns.get(SPAWN));
+                case "spawn":
+                    p.teleport(spawns.get(p.getWorld().getName()));
+                case "shop":
+                    Location temp = shops.get(p.getWorld().getName());
+                    if (temp == null) {
+                        p.sendMessage(ChatColor.RED + "You are not in a world with a valid admin shop!");
+                    } else {
+                        p.teleport(temp);
+                    }
             }
             return true;
         } catch (Exception ex) {
@@ -61,8 +61,7 @@ public class RandomUtils extends JavaPlugin implements Listener{
             for (World world : Bukkit.getWorlds()) {
                 locations.put(world.getName(), Methods.getLocationData(world.getName()));
             }
-            GLOBAL_SPAWN = new Location(Bukkit.getWorld(SPAWN_WORLD), 0.5, 65, 0.5, 135, 7);
-            spawns.put(SPAWN_WORLD, GLOBAL_SPAWN);
+            spawns.put(SPAWN, new Location(Bukkit.getWorld(SPAWN), 0.5, 65, 0.5, 135, 7));
             spawns.put("staff", new Location(Bukkit.getWorld("staff"),34.5,113,-48.5,90,0));
             spawns.put("survival", new Location(Bukkit.getWorld("survival"),52.5,99,19.5,0,0));
             shops.put("survival", new Location(Bukkit.getWorld("survival"),6.5,72,-28.5,90,0));
@@ -88,7 +87,7 @@ public class RandomUtils extends JavaPlugin implements Listener{
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         try {
-            e.getPlayer().teleport(new Location(Bukkit.getWorld(SPAWN_WORLD), 0.5F, 65F, 0.5F, 135F, 7F));
+            e.getPlayer().teleport(spawns.get(SPAWN));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -100,10 +99,10 @@ public class RandomUtils extends JavaPlugin implements Listener{
             String from = e.getFrom().getWorld().getName();
             String to = e.getTo().getWorld().getName();
             if (from.equals(to)) return;
-            if (!from.equals(SPAWN_WORLD)) {
+            if (!from.equals(SPAWN)) {
                 locations.get(from).put(e.getPlayer().getName(), e.getFrom());
             }
-            if (!to.equals(SPAWN_WORLD)) {
+            if (!to.equals(SPAWN)) {
                 Location temp = locations.get(to).get(e.getPlayer().getName());
                 if (temp == null) {
                     e.setTo(spawns.get(e.getTo().getWorld().getName()));
