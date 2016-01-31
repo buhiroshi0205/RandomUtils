@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class RandomUtils extends JavaPlugin implements Listener {
     Map<String, Map<String, Location>> locations = new HashMap<String, Map<String, Location>>();
-    final String SPAWN = "spawn";
+    final String SPAWN = "future";
     Map<String, Location> spawns = new HashMap<String, Location>();
     Map<String, Location> shops = new HashMap<String, Location>();
     
@@ -36,8 +36,10 @@ public class RandomUtils extends JavaPlugin implements Listener {
             switch (cmd.getName().toLowerCase()) {
                 case "hub":
                     p.teleport(spawns.get(SPAWN));
+                    break;
                 case "spawn":
                     p.teleport(spawns.get(p.getWorld().getName()));
+                    break;
                 case "shop":
                     Location temp = shops.get(p.getWorld().getName());
                     if (temp == null) {
@@ -45,6 +47,7 @@ public class RandomUtils extends JavaPlugin implements Listener {
                     } else {
                         p.teleport(temp);
                     }
+                    break;
             }
             return true;
         } catch (Exception ex) {
