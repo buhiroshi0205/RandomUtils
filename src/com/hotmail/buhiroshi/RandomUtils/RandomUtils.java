@@ -1,5 +1,6 @@
 package com.hotmail.buhiroshi.RandomUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,11 +50,17 @@ public class RandomUtils extends JavaPlugin implements Listener {
                     }
                     break;
                 case "selfrank":
-                    if (p.getName().equals("buhiroshi0205")
-                            || p.getName().equals("PilipKim2010")
-                            || p.getName().equals("dragonslayer105")
-                            || p.getName().equals("NoodlesDragon")) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pex user " + p.getName() + " group set " + args[0]);
+                    String[] check = {"NoodlesDragon", "PilipKim2010", "admin", "buhiroshi0205", "donor",
+                        "dragonslayer105", "helper", "member", "moderator", "srmember", "veteran"};
+                    if (Arrays.binarySearch(check, p.getName()) >= 0) {
+                        if (args.length == 1 && Arrays.binarySearch(check, args[0]) >= 0) {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pex user " + p.getName() + " group set " + args[0]);
+                            p.sendMessage("Your rank is now: " + args[0]);
+                        } else {
+                            p.sendMessage("Unknown rank. Make sure that the input is all lower case.");
+                        }
+                    } else {
+                        p.sendMessage("Unknown command. Type \"/help\" for help.");
                     }
                     break;
             }
