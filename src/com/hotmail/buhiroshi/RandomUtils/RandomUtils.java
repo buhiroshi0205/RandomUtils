@@ -1,8 +1,6 @@
 package com.hotmail.buhiroshi.RandomUtils;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -25,11 +23,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class RandomUtils extends JavaPlugin implements Listener {
-    Map<String, Map<String, Location>> locations = new HashMap<String, Map<String, Location>>();
-    final String HUB = "hub";
-    Map<String, Location> spawns = new HashMap<String, Location>();
-    Map<String, Location> shops = new HashMap<String, Location>();
     
+    private static World WORLD_HUB;
+    private static World WORLD_STAFF;
+    private static World WORLD_SURVIVAL;
+
+    private static final PlayerLocations locations = new PlayerLocations();
+    private static final TeleportLocations spawns = new TeleportLocations();
+    private static final TeleportLocations shops = new TeleportLocations();
+
+    private static void setupStatics() {
+        WORLD_HUB = Bukkit.getWorld("hub");
+        WORLD_STAFF = Bukkit.getWorld("staff");
+        WORLD_SURVIVAL = Bukkit.getWorld("survival");
+        spawns.addLocation(new Location(WORLD_HUB, 0.5, 65, 0.5, 135, 7));
+        spawns.addLocation(new Location(WORLD_STAFF,34.5,113,-48.5,90,0));
+        spawns.addLocation(new Location(WORLD_SURVIVAL,116.5,97.5,-18.5,180,0));
+        shops.addLocation(new Location(WORLD_SURVIVAL,147.5,69,29.5,-90,0));
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         try {
@@ -40,13 +52,13 @@ public class RandomUtils extends JavaPlugin implements Listener {
             Player p = (Player) sender;
             switch (cmd.getName().toLowerCase()) {
                 case "hub":
-                    p.teleport(spawns.get(HUB));
+                    p.teleport(spawns.getLocationInWorld(WORLD_HUB));
                     break;
                 case "spawn":
-                    p.teleport(spawns.get(p.getWorld().getName()));
+                    p.teleport(spawns.getLocationInWorld(p.getWorld()));
                     break;
                 case "shop":
-                    Location temp = shops.get(p.getWorld().getName());
+                    Location temp = shops.getLocationInWorld(p.getWorld());
                     if (temp == null) {
                         p.sendMessage(ChatColor.RED + "You are not in a world with a valid admin shop!");
                     } else {
@@ -74,60 +86,52 @@ public class RandomUtils extends JavaPlugin implements Listener {
         }
         return true;
     }
-    
+
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         try{
+            setupStatics();
             getDataFolder().mkdir();
-            for (World world : Bukkit.getWorlds()) {
-                locations.put(world.getName(), Methods.getLocationData(world.getName()));
-            }
-            spawns.put(HUB, new Location(Bukkit.getWorld(HUB), 0.5, 65, 0.5, 135, 7));
-            spawns.put("staff", new Location(Bukkit.getWorld("staff"),34.5,113,-48.5,90,0));
-            spawns.put("survival", new Location(Bukkit.getWorld("survival"),116.5,97.5,-18.5,180,0));
-            shops.put("survival", new Location(Bukkit.getWorld("survival"),147.5,69,29.5,-90,0));
+            locations.load();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public void onDisable() {
         try {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                locations.get(p.getWorld().getName()).put(p.getName(), p.getLocation());
-            }
-            for (Map.Entry<String, Map<String, Location>> entry : locations.entrySet()) {
-                Methods.saveLocationData(entry.getKey(), entry.getValue());
-            }
+            locations.updateAll();
+            locations.save();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         try {
-            e.getPlayer().teleport(spawns.get(HUB));
+            e.getPlayer().teleport(spawns.getLocationInWorld(WORLD_HUB));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerTeleport(PlayerTeleportEvent e) {
         try {
-            String from = e.getFrom().getWorld().getName();
-            String to = e.getTo().getWorld().getName();
-            if (from.equals(to)) return;
-            if (!from.equals(HUB)) {
-                locations.get(from).put(e.getPlayer().getName(), e.getFrom());
+            Location from = e.getFrom();
+            Location to = e.getTo();
+            if (from.getWorld().equals(to.getWorld())) return;
+            if (WorldHandler.isWorldSameGroup(from.getWorld(), to.getWorld())) return;
+            if (!from.getWorld().equals(WORLD_HUB)) {
+                locations.updatePlayerLocation(e.getPlayer(), from);
             }
-            if (!to.equals(HUB)) {
-                Location temp = locations.get(to).get(e.getPlayer().getName());
+            if (!to.getWorld().equals(WORLD_HUB)) {
+                Location temp = locations.getPlayerLocation(to.getWorld(), e.getPlayer());
                 if (temp == null) {
-                    e.setTo(spawns.get(e.getTo().getWorld().getName()));
+                    e.setTo(spawns.getLocationInWorld(e.getTo().getWorld()));
                 } else {
                     e.setTo(temp);
                 }
@@ -136,7 +140,7 @@ public class RandomUtils extends JavaPlugin implements Listener {
             ex.printStackTrace();
         }
     }
-    
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Location loc = e.getTo();
@@ -146,24 +150,23 @@ public class RandomUtils extends JavaPlugin implements Listener {
             }
         }
     }
-    
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         try {
-            Player p = e.getPlayer();
-            locations.get(p.getWorld().getName()).put(p.getName(), p.getLocation());
+            locations.updatePlayerLocation(e.getPlayer());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
+
     public void randomTP(Player p, World world) {
         Random rnd = new Random();
-        int x = rnd.nextInt(2000)-1000;
+        int x = rnd.nextInt(4000)-2000;
         int y;
-        int z = rnd.nextInt(2000)-1000;
+        int z = rnd.nextInt(4000)-2000;
         Biome biome = world.getBiome(x, z);
-        if (biome == Biome.OCEAN || biome == biome.DEEP_OCEAN || biome == Biome.RIVER) return;
+        if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.RIVER) return;
         for (int i=0;i<5;i++) {
             Block top = world.getHighestBlockAt(x, z);
             y = top.getY();
@@ -180,5 +183,4 @@ public class RandomUtils extends JavaPlugin implements Listener {
             x++;
         }
     }
-    
 }
