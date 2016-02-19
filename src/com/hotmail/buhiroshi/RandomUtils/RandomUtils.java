@@ -52,18 +52,21 @@ public class RandomUtils extends JavaPlugin implements Listener {
             Player p = (Player) sender;
             switch (cmd.getName().toLowerCase()) {
                 case "hub":
-                    p.teleport(spawns.getLocationInWorld(WORLD_HUB));
+                    //p.teleport(spawns.getLocationInWorld(WORLD_HUB));
+                    Bukkit.dispatchCommand(sender, "warp hub");
                     break;
                 case "spawn":
-                    p.teleport(spawns.getLocationInWorld(p.getWorld()));
+                    //p.teleport(spawns.getLocationInWorld(p.getWorld()));
+                    Bukkit.dispatchCommand(sender, "warp spawn");
                     break;
                 case "shop":
-                    Location temp = shops.getLocationInWorld(p.getWorld());
+                    /*Location temp = shops.getLocationInWorld(p.getWorld());
                     if (temp == null) {
                         p.sendMessage(ChatColor.RED + "You are not in a world with a valid admin shop!");
                     } else {
                         p.teleport(temp);
-                    }
+                    }*/
+                    Bukkit.dispatchCommand(sender, "warp shop");
                     break;
                 case "selfrank":
                     String[] check = {"NoodlesDragon", "PilipKim2010", "admin", "buhiroshi0205", "donor",
