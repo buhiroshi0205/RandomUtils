@@ -2,7 +2,6 @@ name: RandomUtils
 main: com.hotmail.buhiroshi.RandomUtils.RandomUtils
 version: 1
 commands:
-    hub:
     spawn:
     shop:
     selfrank:
