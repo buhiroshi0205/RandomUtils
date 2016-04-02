@@ -73,10 +73,9 @@ public class RandomUtils extends JavaPlugin implements Listener {
     }
     
     public void randomTP(Player p, World world) {
-        Random rnd = new Random();
-        int x = rnd.nextInt(2000)-1000;
+        int x = randomInRange(500, 2000);
         int y;
-        int z = rnd.nextInt(2000)-1000;
+        int z = randomInRange(500, 2000);
         Biome biome = world.getBiome(x, z);
         if (biome == Biome.OCEAN || biome == biome.DEEP_OCEAN || biome == Biome.RIVER) return;
         for (int i=0;i<5;i++) {
@@ -94,6 +93,13 @@ public class RandomUtils extends JavaPlugin implements Listener {
             }
             x++;
         }
+    }
+    
+    private int randomInRange(int min, int max) {
+        Random rnd = new Random();
+        int num = rnd.nextInt(max - min) + min;
+        if (rnd.nextBoolean()) num *= -1;
+        return num;
     }
     
 }
