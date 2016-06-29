@@ -5,3 +5,7 @@ commands:
     spawn:
     shop:
     selfrank:
+    setcommand:
+    maintenance:
+    show:
+    dump:
