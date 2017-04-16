@@ -24,6 +24,7 @@ public class RamTracker implements Runnable {
         if (mem > max[players]) max[players] = mem;
         if (min[players] == 0 || mem < min[players]) min[players] = mem;
         sum[players] += mem;
+        numrecords[players]++;
     }
     
     public void reset() {

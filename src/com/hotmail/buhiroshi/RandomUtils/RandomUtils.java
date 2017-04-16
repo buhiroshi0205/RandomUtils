@@ -1,23 +1,15 @@
 package com.hotmail.buhiroshi.RandomUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
-import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -38,16 +29,26 @@ public class RandomUtils extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         try {
             if (!(sender instanceof Player)) {
-                if (label.equals("maintenance")) {
-                    maintenance = !maintenance;
-                    this.getLogger().log(Level.INFO, "Server maintenance status set to {0}!", maintenance);
-                } else {
-                    sender.sendMessage("Command sender must be a player!");
+                switch (label.toLowerCase()) {
+                    case "maintenance":
+                        maintenance = !maintenance;
+                        this.getLogger().log(Level.INFO, "Server maintenance status set to {0}!", maintenance);
+                        break;
+                    case "show":
+                        ramtracker.show();
+                        break;
+                    case "dump":
+                        ramtracker.show();
+                        ramtracker.reset();
+                        break;
+                    default:
+                        sender.sendMessage("Command sender must be a player!");
+                        break;
                 }
                 return true;
             }
             Player p = (Player) sender;
-            switch (cmd.getName().toLowerCase()) {
+            switch (label.toLowerCase()) {
                 case "spawn":
                     Bukkit.dispatchCommand(sender, "warp spawn");
                     break;
@@ -68,33 +69,6 @@ public class RandomUtils extends JavaPlugin implements Listener {
                         p.sendMessage("Unknown command. Type \"/help\" for help.");
                     }
                     break;
-                case "setcommand":
-                    boolean success = false;
-                    if (p.hasPermission("RandomUtils.setcommand") && args.length > 0) {
-                        Set<Material> lalala = null;
-                        Block cmdblock = p.getTargetBlock(lalala, 10);
-                        if (cmdblock != null && cmdblock.getType() == Material.COMMAND) {
-                            StringBuilder sb = new StringBuilder(args[0]);
-                            for (int i=1;i<args.length;i++) {
-                                sb.append(' ');
-                                sb.append(args[i]);
-                            }
-                            CommandBlock state = (CommandBlock) cmdblock.getState();
-                            state.setCommand(sb.toString());
-                            state.update();
-                            p.sendMessage("Command set to: \"" + sb.toString() + "\"");
-                            success = true;
-                        }
-                    }
-                    if (!success) p.sendMessage("Failed! Are you sure you are looking directly at a command block 10 blocks within line of sight and entered a valid command?");
-                    break;
-                case "show":
-                    ramtracker.show();
-                    break;
-                case "dump":
-                    ramtracker.show();
-                    ramtracker.reset();
-                    break;
             }
             return true;
         } catch (Exception ex) {
@@ -110,10 +84,15 @@ public class RandomUtils extends JavaPlugin implements Listener {
         getDataFolder().mkdir();
     }
     
+    @Override
+    public void onDisable() {
+        ramtracker.show();
+    }
+    
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Location loc = e.getTo();
-        if (loc.getWorld().getName().equals("survival") && loc.getBlockY() == 69) {
+        if (loc.getWorld().getName().equals("world") && loc.getBlockY() == 69) {
             if (loc.getX() > 113 && loc.getX() < 120 && loc.getZ() > 75 && loc.getZ() < 82) {
                 if (loc.getBlock().isLiquid()) randomTP(e.getPlayer(), e.getTo().getWorld());
             }
@@ -129,7 +108,7 @@ public class RandomUtils extends JavaPlugin implements Listener {
         e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server under Maintenance!");
     }
     
-    @EventHandler
+    /*@EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         File origin = new File("plugins" + File.separator + "PerWorldInventory" + File.separator + "data"
@@ -138,7 +117,7 @@ public class RandomUtils extends JavaPlugin implements Listener {
         try {
             Files.copy(origin.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {}
-    }
+    }*/
     
     public void randomTP(Player p, World world) {
         int x = randomInRange(500, 2000);
