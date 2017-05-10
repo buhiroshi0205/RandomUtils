@@ -1,11 +1,7 @@
-name: RandomUtils
+name: RandomUtils-Lobby
 main: com.hotmail.buhiroshi.RandomUtils.RandomUtils
 version: 1
 commands:
-    spawn:
-    shop:
-    selfrank:
-    setcommand:
     maintenance:
     show:
     dump:
