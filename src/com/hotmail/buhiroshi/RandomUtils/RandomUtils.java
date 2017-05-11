@@ -2,7 +2,6 @@ package com.hotmail.buhiroshi.RandomUtils;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,14 +14,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class RandomUtils extends JavaPlugin implements Listener {
     
-    boolean maintenance = false;
     RamTracker ramtracker = new RamTracker(this);
     
     @Override
@@ -30,10 +27,6 @@ public class RandomUtils extends JavaPlugin implements Listener {
         try {
             if (!(sender instanceof Player)) {
                 switch (label.toLowerCase()) {
-                    case "maintenance":
-                        maintenance = !maintenance;
-                        this.getLogger().log(Level.INFO, "Server maintenance status set to {0}!", maintenance);
-                        break;
                     case "show":
                         ramtracker.show();
                         break;
@@ -98,26 +91,6 @@ public class RandomUtils extends JavaPlugin implements Listener {
             }
         }
     }
-    
-    @EventHandler
-    public void onPlayerLogin(AsyncPlayerPreLoginEvent e) {
-        if (!maintenance || e.getName().equals("buhiroshi0205")
-                || e.getName().equals("PilipKim2010")
-                || e.getName().equals("NoodlesDragon")
-                || e.getName().equals("dragonslayer105")) return;
-        e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server under Maintenance!");
-    }
-    
-    /*@EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        UUID uuid = e.getPlayer().getUniqueId();
-        File origin = new File("plugins" + File.separator + "PerWorldInventory" + File.separator + "data"
-                + File.separator + uuid.toString() + File.separator + "survival.json");
-        File destination = new File("plugins" + File.separator + "RandomUtils" + File.separator + e.getPlayer().getName() + ".json");
-        try {
-            Files.copy(origin.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {}
-    }*/
     
     public void randomTP(Player p, World world) {
         int x = randomInRange(500, 2000);

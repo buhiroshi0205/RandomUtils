@@ -6,6 +6,5 @@ commands:
     shop:
     selfrank:
     setcommand:
-    maintenance:
     show:
     dump:
